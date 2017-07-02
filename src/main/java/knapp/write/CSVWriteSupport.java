@@ -1,8 +1,7 @@
-package knapp;
+package knapp.write;
 
-import knapp.spec.CSVColumn;
-import knapp.spec.CSVSchema;
-import org.apache.commons.lang.StringUtils;
+import knapp.domain.CSVColumn;
+import knapp.domain.CSVSchema;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.parquet.hadoop.api.WriteSupport;
 import org.apache.parquet.io.api.Binary;
@@ -10,20 +9,19 @@ import org.apache.parquet.io.api.RecordConsumer;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by michael on 7/1/17.
  */
-public class CSVSegmentWriteSupport extends WriteSupport<String[]> {
+public class CSVWriteSupport extends WriteSupport<String[]> {
 
     private RecordConsumer recordConsumer;
     private CSVSchema csvSchema;
     private String messageTypeName;
 
-    public CSVSegmentWriteSupport(CSVSchema csvSchema,String messageTypeName) {
+    public CSVWriteSupport(CSVSchema csvSchema, String messageTypeName) {
         this.csvSchema = csvSchema;
         this.messageTypeName = messageTypeName;
     }

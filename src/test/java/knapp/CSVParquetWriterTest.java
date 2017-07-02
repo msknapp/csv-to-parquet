@@ -1,7 +1,7 @@
 package knapp;
 
+import knapp.write.CSVParquetWriter;
 import org.apache.parquet.format.FileMetaData;
-import org.apache.parquet.format.PageHeader;
 import org.apache.parquet.format.Util;
 import org.junit.Test;
 
@@ -12,11 +12,11 @@ import java.util.Random;
 /**
  * Created by michael on 7/1/17.
  */
-public class CSVToParquetTest {
+public class CSVParquetWriterTest {
 
     @Test
     public void testIt() throws IOException {
-        CSVToParquet.main(new String[] {
+        CSVToParquetMain.main(new String[] {
                 "/home/michael/workspace/csv-to-parquet/example-input/my.csv",
                 "/home/michael/workspace/csv-to-parquet/example-input/my-schema.txt",
                 "/home/michael/workspace/csv-to-parquet/tmp",
@@ -51,7 +51,7 @@ public class CSVToParquetTest {
     }
     @Test
     public void playground() throws IOException {
-        CSVToParquet.main(new String[] {
+        CSVToParquetMain.main(new String[] {
                 "/home/michael/workspace/csv-to-parquet/playground/input/random-values.csv",
                 "/home/michael/workspace/csv-to-parquet/playground/input/random-values-schema.csv",
                 "/home/michael/workspace/csv-to-parquet/playground/output",

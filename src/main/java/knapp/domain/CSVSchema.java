@@ -1,6 +1,7 @@
-package knapp.spec;
+package knapp.domain;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.parquet.io.api.Converter;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
 import org.apache.parquet.schema.Type;
@@ -33,15 +34,6 @@ public class CSVSchema {
         return csvSchema;
     }
 
-    public boolean requiresSort() {
-        for (CSVColumn column : columns) {
-            if (column.getSort() > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static CSVSchema fromFile(String filePath) throws IOException {
         String text = FileUtils.readFileToString(new File(filePath));
         return fromText(text);
@@ -61,31 +53,20 @@ public class CSVSchema {
 
     }
 
-    public int[] deriveSortColumns() {
-        int total = 0;
-        for (int i = 0;i<columns.size();i++) {
-            if (columns.get(i).getSort() > 0) {
-                total++;
-            }
-        }
-        if (total < 1) {
-            return new int[0];
-        }
-        int[] out = new int[total];
-        for (int i = 0;i<columns.size();i++) {
-            CSVColumn col = columns.get(i);
-            if (col.getSort() > 0) {
-                out[col.getSort()-1] = col.getNumber();
-            }
-        }
-        return out;
-    }
-
     public List<CSVColumn> getColumns() {
         return columns;
     }
 
     public void setColumns(List<CSVColumn> columns) {
         this.columns = columns;
+    }
+
+    public CSVColumn getColumnByIndex(int fieldIndex) {
+        for (CSVColumn col : this.columns) {
+            if (col.getNumber() == fieldIndex) {
+                return col;
+            }
+        }
+        return null;
     }
 }

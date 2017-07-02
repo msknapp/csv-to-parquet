@@ -1,14 +1,10 @@
-package knapp;
+package knapp.write;
 
-import knapp.data.CSVTable;
-import knapp.spec.CSVSchema;
+import knapp.domain.CSVSchema;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.api.WriteSupport;
-import org.apache.parquet.schema.MessageType;
-
-import java.util.List;
 
 /**
  * Created by michael on 7/1/17.
@@ -29,6 +25,6 @@ class ParquetCSVWriterBuilder extends ParquetWriter.Builder<String[], ParquetCSV
     }
 
     protected WriteSupport<String[]> getWriteSupport(Configuration conf) {
-        return new CSVSegmentWriteSupport(csvSchema,messageTypeName);
+        return new CSVWriteSupport(csvSchema,messageTypeName);
     }
 }
