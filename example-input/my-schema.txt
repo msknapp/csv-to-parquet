@@ -1,0 +1,4 @@
+# type name, parquet type, track range, bloom filter, sort order
+# use 0 or negative numbers for columns you don't want sorted
+name,BINARY,false,true,2
+number,INT32,true,true,1
