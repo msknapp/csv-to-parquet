@@ -1,18 +1,19 @@
 package knapp;
 
-import knapp.data.CSVTable;
-import knapp.data.Column;
 import knapp.data.Row;
-import knapp.spec.CSVColumn;
 import knapp.spec.CSVSchema;
 import org.apache.hadoop.fs.Path;
+import org.apache.parquet.column.ParquetProperties;
 import org.apache.parquet.hadoop.ParquetFileWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
+import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.schema.MessageType;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -87,37 +88,46 @@ public class CSVToParquet {
 
 
     private void createFile(List<String> lines,String outputBase, int fileCount) throws IOException {
-        CSVTable csvTable = null;
-        int[] sortColumns = csvSchema.deriveSortColumns();
-        // convert to rows,
-        List<Row> rows = new ArrayList<>(lines.size());
-        for (String line : lines) {
-            Row row = new Row(sortColumns);
-            String[] ps = line.split(delimiter);
-            for (int i = 0;i<ps.length;i++) {
-                ps[i] = ps[i].trim();
-            }
-            row.setCells(ps);
-            rows.add(row);
-        }
-        // sort
-        if (csvSchema.requiresSort()) {
-            Collections.sort(rows);
-        }
-
-        csvTable = new CSVTable(csvSchema);
-        // convert to a table.
-        for (Row row : rows) {
-            for (CSVColumn column : csvSchema.getColumns()) {
-                Column col = csvTable.getColumn(column);
-                String val = row.getCells()[column.getNumber()];
-                col.addValue(val);
-            }
-        }
         String p = outputBase+"/"+fileCount+".parquet";
         Path path = new Path(p);
-        ParquetWriter<CSVTable> parquetWriter = new ParquetCSVWriterBuilder(path,csvTable,messageType.getName()).build();
-        parquetWriter.write(csvTable);
+        ParquetWriter<String[]> parquetWriter = new ParquetCSVWriterBuilder(path,csvSchema,messageType.getName())
+                .enableValidation()
+                .withWriterVersion(ParquetProperties.WriterVersion.PARQUET_2_0)
+                .withCompressionCodec(CompressionCodecName.UNCOMPRESSED)
+                .build();
+
+        if (csvSchema.requiresSort()) {
+            int[] sortColumns = csvSchema.deriveSortColumns();
+            // convert to rows,
+            List<Row> rows = new ArrayList<>(lines.size());
+            for (String line : lines) {
+                Row row = new Row(sortColumns);
+                String[] ps = line.split(delimiter);
+                for (int i = 0; i < ps.length; i++) {
+                    ps[i] = ps[i].trim();
+                }
+                row.setCells(ps);
+                rows.add(row);
+            }
+            // sort
+            if (csvSchema.requiresSort()) {
+                Collections.sort(rows);
+            }
+
+//        csvTable = new CSVTable(csvSchema);
+            // convert to a table.
+            for (Row row : rows) {
+                parquetWriter.write(row.getCells());
+            }
+        } else {
+            for (String line : lines) {
+                String[] ps = line.split(delimiter);
+                for (int i = 0; i < ps.length; i++) {
+                    ps[i] = ps[i].trim();
+                }
+                parquetWriter.write(ps);
+            }
+        }
         parquetWriter.close();
     }
 

@@ -13,14 +13,14 @@ import java.util.List;
 /**
  * Created by michael on 7/1/17.
  */
-class ParquetCSVWriterBuilder extends ParquetWriter.Builder<CSVTable, ParquetCSVWriterBuilder> {
+class ParquetCSVWriterBuilder extends ParquetWriter.Builder<String[], ParquetCSVWriterBuilder> {
 
-    private CSVTable csvTable;
+    private CSVSchema csvSchema;
     private String messageTypeName;
 
-    protected ParquetCSVWriterBuilder(Path file,CSVTable csvTable,String messageTypeName) {
+    protected ParquetCSVWriterBuilder(Path file,CSVSchema csvSchema,String messageTypeName) {
         super(file);
-        this.csvTable = csvTable;
+        this.csvSchema = csvSchema;
         this.messageTypeName = messageTypeName;
     }
 
@@ -28,7 +28,7 @@ class ParquetCSVWriterBuilder extends ParquetWriter.Builder<CSVTable, ParquetCSV
         return this;
     }
 
-    protected WriteSupport getWriteSupport(Configuration conf) {
-        return new CSVSegmentWriteSupport(csvTable,messageTypeName);
+    protected WriteSupport<String[]> getWriteSupport(Configuration conf) {
+        return new CSVSegmentWriteSupport(csvSchema,messageTypeName);
     }
 }

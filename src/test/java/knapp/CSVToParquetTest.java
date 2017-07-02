@@ -1,6 +1,7 @@
 package knapp;
 
 import org.apache.parquet.format.FileMetaData;
+import org.apache.parquet.format.PageHeader;
 import org.apache.parquet.format.Util;
 import org.junit.Test;
 
