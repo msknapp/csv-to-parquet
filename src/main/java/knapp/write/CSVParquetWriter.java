@@ -63,7 +63,7 @@ public class CSVParquetWriter {
 
         int fileCount = 0;
 
-        ParquetWriter<String[]> parquetWriter = createParquetWriter(outputBase, csvSchema, messageType, fileCount);
+        ParquetWriter<String[]> parquetWriter = createParquetWriter(fileCount);
 
         int linesWritten = 0;
         while ((line = reader.readLine())!= null) {
@@ -77,7 +77,7 @@ public class CSVParquetWriter {
                 parquetWriter.close();
                 fileCount++;
                 linesWritten = 0;
-                parquetWriter = createParquetWriter(outputBase, csvSchema, messageType, fileCount);
+                parquetWriter = createParquetWriter(fileCount);
             }
         }
         if (linesWritten > 0) {
@@ -87,11 +87,10 @@ public class CSVParquetWriter {
         inputStreamReader.close();
     }
 
-    private static ParquetWriter<String[]> createParquetWriter(String outputBase, CSVSchema csvSchema,
-                                                               MessageType messageType, int fileCount) throws IOException {
+    private ParquetWriter<String[]> createParquetWriter(int fileCount) throws IOException {
         String p = outputBase+"/"+fileCount+".parquet";
         Path path = new Path(p);
-        return new ParquetCSVWriterBuilder(path,csvSchema,messageType.getName())
+        return new ParquetCSVWriterBuilder(path,csvSchema,messageType.getName(),rowsPerOutputFile)
                 .enableValidation()
                 .withWriterVersion(ParquetProperties.WriterVersion.PARQUET_2_0)
                 .withCompressionCodec(CompressionCodecName.UNCOMPRESSED)

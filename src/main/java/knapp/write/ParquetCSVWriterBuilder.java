@@ -13,11 +13,13 @@ class ParquetCSVWriterBuilder extends ParquetWriter.Builder<String[], ParquetCSV
 
     private CSVSchema csvSchema;
     private String messageTypeName;
+    private int expectedValues;
 
-    protected ParquetCSVWriterBuilder(Path file,CSVSchema csvSchema,String messageTypeName) {
+    protected ParquetCSVWriterBuilder(Path file,CSVSchema csvSchema,String messageTypeName,int expectedValues) {
         super(file);
         this.csvSchema = csvSchema;
         this.messageTypeName = messageTypeName;
+        this.expectedValues = expectedValues;
     }
 
     protected ParquetCSVWriterBuilder self() {
@@ -25,6 +27,6 @@ class ParquetCSVWriterBuilder extends ParquetWriter.Builder<String[], ParquetCSV
     }
 
     protected WriteSupport<String[]> getWriteSupport(Configuration conf) {
-        return new CSVWriteSupport(csvSchema,messageTypeName);
+        return new CSVWriteSupport(csvSchema,messageTypeName,expectedValues);
     }
 }
